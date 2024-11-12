@@ -24,7 +24,9 @@ jobs:
         run: black --check .
 
       - name: Lint with Pylint
-        run: pylint **/*.py
+        run: |
+          pip install pylint  # S'assure que pylint est bien installé
+          pylint $(find . -name "*.py")
 
       - name: Run Tests
         run: pytest
