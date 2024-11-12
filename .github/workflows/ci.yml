@@ -1,0 +1,33 @@
+name: Python CI
+
+on: [push, pull_request]
+
+jobs:
+  lint-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out code
+        uses: actions/checkout@v2
+
+      - name: Set up Python
+        uses: actions/setup-python@v2
+        with:
+          python-version: '3.x'
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install black pylint pytest bandit
+
+      - name: Lint with Black
+        run: black --check .
+
+      - name: Lint with Pylint
+        run: pylint **/*.py
+
+      - name: Run Tests
+        run: pytest
+
+      - name: Security Check with Bandit
+        run: bandit -r .
