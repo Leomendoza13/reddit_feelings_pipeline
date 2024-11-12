@@ -23,17 +23,3 @@ resource "google_compute_firewall" "allow_internal" {
   direction     = "INGRESS"
   target_tags   = ["spark"]
 }
-
-resource "google_compute_firewall" "allow_kafka_external" {
-  name    = "allow-kafka-external"
-  network = google_compute_network.reddit_vpc.id
-
-  allow {
-    protocol = "tcp"
-    ports    = ["9092"]
-  }
-
-  source_ranges = ["0.0.0.0/0"]
-  direction     = "INGRESS"
-  target_tags   = ["kafka"]
-}
