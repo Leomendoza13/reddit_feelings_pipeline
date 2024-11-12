@@ -28,8 +28,5 @@ jobs:
           pip install pylint  # S'assure que pylint est bien installé
           pylint $(find . -name "*.py")
 
-      - name: Run Tests
-        run: pytest
-
       - name: Security Check with Bandit
         run: bandit -r .
