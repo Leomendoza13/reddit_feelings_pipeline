@@ -32,6 +32,6 @@ resource "google_compute_firewall" "allow_local_to_airflow" {
     ports    = ["8080"] # Le port par défaut pour l'interface web d'Airflow
   }
 
-  source_ranges = ["TON_IP_LOCALE"]
+  source_ranges = [var.your_ip_adress]
   target_tags   = ["airflow"]
 }
