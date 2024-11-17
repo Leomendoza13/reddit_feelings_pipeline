@@ -21,4 +21,8 @@ resource "google_compute_instance" "spark_vm" {
     email  = google_service_account.spark_service_account.email
     scopes = ["https://www.googleapis.com/auth/cloud-platform"]
   }
+
+  metadata = {
+    ssh-keys = "airflow:${tls_private_key.airflow_ssh_key.public_key_openssh}"
+  }
 }
