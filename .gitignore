@@ -5,3 +5,4 @@ venv
 .terraform.tfstate.lock.info
 terraform.tfstate
 terraform.tfstate.backup
+reddit_credentials.json
