@@ -474,7 +474,7 @@ def main() -> None:
         model = SentenceTransformer("all-mpnet-base-v2")
 
         # Get results
-        full_results = find_subreddits("final fantasy", reddit, model)
+        full_results = find_subreddits("the legend of zelda", reddit, model)
         subreddit_names = get_subreddit_names(full_results)
 
         # Print results
