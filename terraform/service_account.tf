@@ -25,3 +25,9 @@ resource "google_project_iam_member" "airflow_service_instance_admin" {
   role    = "roles/compute.instanceAdmin.v1"
   member  = "serviceAccount:${google_service_account.airflow_service_account.email}"
 }
+
+resource "google_project_iam_member" "airflow_storage_admin" {
+  project = "reddit-feelings-pipeline"
+  role   = "roles/storage.admin"  
+  member = "serviceAccount:${google_service_account.airflow_service_account.email}"
+}
