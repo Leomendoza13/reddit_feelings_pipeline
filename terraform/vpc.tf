@@ -23,15 +23,28 @@ resource "google_compute_firewall" "allow_airflow_to_spark" {
   target_tags   = ["spark"]
 }
 
-resource "google_compute_firewall" "allow_local_to_airflow" {
-  name    = "allow-local-to-airflow"
+resource "google_compute_firewall" "allow_iap_to_vms" {
+  name    = "allow-iap-to-vms"
   network = google_compute_network.reddit_vpc.id
 
   allow {
     protocol = "tcp"
-    ports    = ["8080"] # Le port par défaut pour l'interface web d'Airflow
+    ports    = ["22"]
+  }
+
+  source_ranges = ["35.235.240.0/20"]  # Google IAP range
+  target_tags   = ["airflow", "spark"]
+}
+
+resource "google_compute_firewall" "allow_local_access" {
+  name    = "allow-local-access"
+  network = google_compute_network.reddit_vpc.id
+
+  allow {
+    protocol = "tcp"
+    ports    = ["22", "8080", "8888", "7077"]  # Ports pour Airflow et Spark UI
   }
 
   source_ranges = [var.your_ip_adress]
-  target_tags   = ["airflow"]
+  target_tags   = ["airflow", "spark"]
 }
