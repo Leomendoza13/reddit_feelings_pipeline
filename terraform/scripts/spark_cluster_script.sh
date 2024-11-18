@@ -33,41 +33,30 @@ sudo usermod -aG docker $USER
 sudo mkdir -p /opt/spark
 cd /opt/spark
 
-# Create docker-compose.yml for Spark
-cat > /opt/spark/docker-compose.yml << 'EOL'
+# Prompt user for Spark Master IP
+read -p "Enter the IP address of the Spark Master: " SPARK_MASTER_IP
+
+# Create docker-compose.yml for Spark Worker only
+cat > /opt/spark/docker-compose.yml << EOL
 version: '3.8'
 
 services:
-  spark-master:
-    image: bitnami/spark:3.5.3
-    container_name: spark-master
-    ports:
-      - "8080:8080"  # Web UI for Spark Master
-      - "7077:7077"  # Spark Master
-    environment:
-      - SPARK_MODE=master
-      - SPARK_MASTER_HOST=spark-master
-    command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.master.Master"
-
   spark-worker:
     image: bitnami/spark:3.5.3
     container_name: spark-worker
-    depends_on:
-      - spark-master
     environment:
       - SPARK_MODE=worker
-      - SPARK_MASTER_URL=spark://spark-master:7077
-    command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://spark-master:7077"
+      - SPARK_MASTER_URL=spark://$SPARK_MASTER_IP:7077
+    command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://$SPARK_MASTER_IP:7077"
 EOL
 
 # Create directories for jobs and data
 sudo mkdir -p /opt/spark/jobs /opt/spark/data
 sudo chmod -R 777 /opt/spark/jobs /opt/spark/data
 
-# Start Spark using Docker Compose
+# Start Spark Worker using Docker Compose
 cd /opt/spark
-sudo docker compose up -d
+sudo docker compose up -d spark-worker
 
 # Print instructions for user
-echo "Installation terminée. Veuillez redémarrer votre machine pour appliquer les changements au groupe Docker."
-echo "Spark est prêt à être utilisé sur http://127.0.0.1:8080"
+echo "Installation terminée. Spark Worker est connecté au Master Spark ($SPARK_MASTER_IP:7077)."
