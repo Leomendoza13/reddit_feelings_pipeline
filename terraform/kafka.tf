@@ -23,4 +23,6 @@ resource "google_compute_instance" "kafka_vm" {
     access_config {
     }
   }
+
+  metadata_startup_script = file("${path.module}/scripts/kafka_script.sh")
 }
