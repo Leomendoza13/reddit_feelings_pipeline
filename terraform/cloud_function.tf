@@ -24,7 +24,8 @@ resource "google_cloudfunctions_function" "extract_reddit_data" {
   available_memory_mb = 256
 
   environment_variables = {
-    GOOGLE_FUNCTION_OUTPUT = "output.json"
+    REDDIT_CREDS_PATH = "reddit_credentials.json"
+    OUTPUT_FILE_PATH  = "output.json"
   }
 }
 

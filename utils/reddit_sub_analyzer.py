@@ -392,7 +392,7 @@ def print_simple_results(results_by_category: Dict[str, List[str]]) -> None:
             print(f"r/{subreddit}")
 
 
-def get_reddit_credentials(filename: str = "reddit_credentials.json") -> Dict[str, str]:
+def get_reddit_credentials(filename: str = "../config/reddit_credentials.json") -> Dict[str, str]:
     """
     Read Reddit API credentials from a JSON file.
 
@@ -462,9 +462,11 @@ def write_results(subject: str, all_subreddits: List[str]) -> None:
         IOError: If there is an issue with writing to the JSON file.
     """
     object_json = {"subject": subject, "all_subreddits": all_subreddits}
+    output_dir = os.path.join("config")
+    output_path = os.path.join(output_dir, "output.json")
     try:
         with open(
-            "output.json", "w", encoding="utf-8"
+            output_path, "w", encoding="utf-8"
         ) as json_file:  # Corrected to "w" mode to write the file
             json.dump(object_json, json_file, indent=4)
     except IOError as io_error:
@@ -494,7 +496,7 @@ def main() -> None:
         # Initialize sentence transformer model
         model = SentenceTransformer("all-mpnet-base-v2")
 
-        subject = "jinx"
+        subject = "batman"
         # Get results
         full_results = find_subreddits(subject, reddit, model)
         subreddit_names = get_subreddit_names(full_results)
