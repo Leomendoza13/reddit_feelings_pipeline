@@ -6,7 +6,7 @@ resource "google_compute_network" "reddit_vpc" {
 resource "google_compute_subnetwork" "reddit_subnet" {
   name          = "reddit-subnet"
   ip_cidr_range = "10.0.0.0/16"
-  region        = "europe-west9"
+  region        = "europe-west1"
   network       = google_compute_network.reddit_vpc.id
 }
 

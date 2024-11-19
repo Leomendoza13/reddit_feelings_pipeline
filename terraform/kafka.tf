@@ -1,7 +1,7 @@
 resource "google_compute_instance" "kafka_vm" {
   name         = "kafka-instance"
   machine_type = "n2-standard-4"
-  zone         = "europe-west9-a"
+  zone         = "europe-west1-b"
   tags         = ["kafka"]
 
   boot_disk {
