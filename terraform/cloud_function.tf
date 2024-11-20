@@ -6,34 +6,46 @@ data "archive_file" "function_zip" {
 }
 
 resource "google_storage_bucket_object" "function_zip" {
-  name   = "function.zip"
+  name   = "function-${data.archive_file.function_zip.output_md5}.zip"  # Nom unique basé sur le hash MD5
   bucket = google_storage_bucket.functions_bucket.name
-  source = "${path.module}/../config/function.zip" # Chemin vers le fichier local
+  source = data.archive_file.function_zip.output_path
 }
 
 # Cloud Function
-resource "google_cloudfunctions_function" "extract_reddit_data" {
-  name                  = "extract_reddit_data"
-  runtime               = "python310"
-  region                = "europe-west1"
-  source_archive_bucket = google_storage_bucket.functions_bucket.name
-  source_archive_object = google_storage_bucket_object.function_zip.name
-  entry_point           = "main"
-  trigger_http          = true
+resource "google_cloudfunctions2_function" "extract_reddit_data" {
+  name        = "extract_reddit_data-v2"
+  location    = "europe-west1"
+  description = "Extract data from Reddit using PRAW"
 
-  available_memory_mb = 256
-
-  environment_variables = {
-    REDDIT_CREDS_PATH = "reddit_credentials.json"
-    OUTPUT_FILE_PATH  = "output.json"
+  build_config {
+    runtime     = "python310"
+    entry_point = "main" # Définir le point d'entrée de la fonction
+    source {
+      storage_source {
+        bucket = google_storage_bucket.functions_bucket.name
+        object = google_storage_bucket_object.function_zip.name
+      }
+    }
+    environment_variables = {
+      REDDIT_CREDS_PATH = "reddit_credentials.json"
+      OUTPUT_FILE_PATH  = "output.json"
+    }
   }
+
+  service_config {
+    max_instance_count = 1
+    available_memory   = "256M"
+    timeout_seconds    = 60
+  }
+
+  depends_on = [google_storage_bucket_object.function_zip]
 }
 
 # Permission pour la fonction
 resource "google_cloudfunctions_function_iam_member" "all_users" {
   project        = "reddit-feelings-pipeline"
   region         = "europe-west1"
-  cloud_function = google_cloudfunctions_function.extract_reddit_data.name
+  cloud_function = google_cloudfunctions2_function.extract_reddit_data.name
   role           = "roles/cloudfunctions.invoker"
   member         = "allUsers"
 }
