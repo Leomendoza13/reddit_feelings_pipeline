@@ -13,7 +13,7 @@ resource "google_storage_bucket_object" "function_zip" {
 
 # Cloud Function
 resource "google_cloudfunctions2_function" "extract_reddit_data" {
-  name        = "extract_reddit_data-v2"
+  name        = "extract_reddit_data"
   location    = "europe-west1"
   description = "Extract data from Reddit using PRAW"
 
@@ -41,11 +41,13 @@ resource "google_cloudfunctions2_function" "extract_reddit_data" {
   depends_on = [google_storage_bucket_object.function_zip]
 }
 
-# Permission pour la fonction
-resource "google_cloudfunctions_function_iam_member" "all_users" {
-  project        = "reddit-feelings-pipeline"
-  region         = "europe-west1"
+# Permission pour la fonction TODO CHANGER ALL USERS
+resource "google_cloudfunctions2_function_iam_member" "all_users" {
+  project  = "reddit-feelings-pipeline"
+  location = "europe-west1"
+  role     = "roles/cloudfunctions.invoker"
+  member   = "user:tedleo2000@gmail.com"
   cloud_function = google_cloudfunctions2_function.extract_reddit_data.name
-  role           = "roles/cloudfunctions.invoker"
-  member         = "allUsers"
+
+  depends_on = [google_cloudfunctions2_function.extract_reddit_data]
 }
