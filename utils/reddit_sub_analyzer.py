@@ -496,7 +496,7 @@ def main() -> None:
         # Initialize sentence transformer model
         model = SentenceTransformer("all-mpnet-base-v2")
 
-        subject = "batman"
+        subject = "bitcoin"
         # Get results
         full_results = find_subreddits(subject, reddit, model)
         subreddit_names = get_subreddit_names(full_results)
