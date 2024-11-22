@@ -110,7 +110,9 @@ def save_post_to_bucket(bucket_name: str, post_data: dict) -> None:
         raise error
 
 
-def fetch_comments(post: praw.models.Submission, rate_limiter: RedditRateLimiter) -> List[dict]:
+def fetch_comments(
+    post: praw.models.Submission, rate_limiter: RedditRateLimiter
+) -> List[dict]:
     """
     Fetches all comments for a given Reddit post with rate limiting.
 
@@ -127,15 +129,17 @@ def fetch_comments(post: praw.models.Submission, rate_limiter: RedditRateLimiter
         rate_limiter.increment()
 
         for comment in post.comments.list():
-            comments.append({
-                "id": comment.id,
-                "author": str(comment.author) if comment.author else "[deleted]",
-                "body": comment.body,
-                "score": comment.score,
-                "created_utc": comment.created_utc,
-                "parent_id": comment.parent_id,
-                "is_submitter": comment.is_submitter,
-            })
+            comments.append(
+                {
+                    "id": comment.id,
+                    "author": str(comment.author) if comment.author else "[deleted]",
+                    "body": comment.body,
+                    "score": comment.score,
+                    "created_utc": comment.created_utc,
+                    "parent_id": comment.parent_id,
+                    "is_submitter": comment.is_submitter,
+                }
+            )
     except Exception as error:
         print(f"Error fetching comments for post {post.id}: {error}")
     return comments
