@@ -27,7 +27,7 @@ resource "google_compute_instance" "spark_master_vm" {
   }
 
   metadata = {
-    ssh-keys = "airflow:${tls_private_key.airflow_ssh_key.public_key_openssh}"
+    ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
   metadata_startup_script = file("${path.module}/scripts/spark_master_script.sh")
