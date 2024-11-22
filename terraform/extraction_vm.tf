@@ -27,7 +27,6 @@ resource "google_compute_instance" "extraction_vm" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
-  metadata_startup_script = file("${path.module}/scripts/extraction_vm_script.sh")
 }
 
 resource "null_resource" "extraction" {
@@ -44,4 +43,26 @@ resource "null_resource" "extraction" {
       host        = google_compute_instance.extraction_vm.network_interface[0].access_config[0].nat_ip
     }
   }   
+}
+
+resource "null_resource" "setup" {
+  depends_on = [null_resource.extraction]
+  
+  provisioner "remote-exec" {
+    inline = [
+      "sudo DEBIAN_FRONTEND=noninteractive apt-get update -y",
+      "sudo DEBIAN_FRONTEND=noninteractive apt-get install -y python3 python3-venv python3-pip",
+      "python3 -m venv venv",
+      "source venv/bin/activate",
+      "pip install -r requirements.txt",
+      "python3 main.py"
+    ]
+    
+    connection {
+      type        = "ssh"
+      user        = var.ssh_user
+      private_key = file(replace(var.ssh_pub_key_path, ".pub", ""))
+      host        = google_compute_instance.extraction_vm.network_interface[0].access_config[0].nat_ip
+    }
+  }
 }
