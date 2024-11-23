@@ -392,7 +392,9 @@ def print_simple_results(results_by_category: Dict[str, List[str]]) -> None:
             print(f"r/{subreddit}")
 
 
-def get_reddit_credentials(filename: str = "reddit_credentials.json") -> Dict[str, str]:
+def get_reddit_credentials(
+    filename: str = "../config/reddit_credentials.json",
+) -> Dict[str, str]:
     """
     Read Reddit API credentials from a JSON file.
 
@@ -450,6 +452,29 @@ def get_reddit_credentials(filename: str = "reddit_credentials.json") -> Dict[st
         raise
 
 
+def write_results(subject: str, all_subreddits: List[str]) -> None:
+    """
+    Write the given subject and a list of subreddits to a JSON file.
+
+    Args:
+        subject (str): The topic or subject being analyzed.
+        all_subreddits (List[str]): A list of subreddit names related to the subject.
+
+    Raises:
+        IOError: If there is an issue with writing to the JSON file.
+    """
+    object_json = {"subject": subject, "all_subreddits": all_subreddits}
+    output_dir = os.path.join("config")
+    output_path = os.path.join(output_dir, "output.json")
+    try:
+        with open(
+            output_path, "w", encoding="utf-8"
+        ) as json_file:  # Corrected to "w" mode to write the file
+            json.dump(object_json, json_file, indent=4)
+    except IOError as io_error:
+        raise IOError(f"Error writing to the file: {io_error}") from io_error
+
+
 def main() -> None:
     """
     Main function to run the subreddit analysis.
@@ -473,8 +498,9 @@ def main() -> None:
         # Initialize sentence transformer model
         model = SentenceTransformer("all-mpnet-base-v2")
 
+        subject = "guns"
         # Get results
-        full_results = find_subreddits("the legend of zelda", reddit, model)
+        full_results = find_subreddits(subject, reddit, model)
         subreddit_names = get_subreddit_names(full_results)
 
         # Print results
@@ -486,6 +512,7 @@ def main() -> None:
             for subreddits in subreddit_names.values()
             for subreddit in subreddits
         ]
+        write_results(subject, all_subreddits)
         print("\nAll subreddits:", all_subreddits)
 
     except (FileNotFoundError, json.JSONDecodeError) as file_error:

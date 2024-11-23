@@ -1,7 +1,7 @@
 resource "google_compute_instance" "spark_master_vm" {
   name         = "spark-master-instance"
   machine_type = "e2-standard-2"
-  zone         = "europe-west9-b"
+  zone         = "europe-west1-b"
   tags         = ["spark-master"]
 
   boot_disk {
@@ -27,7 +27,7 @@ resource "google_compute_instance" "spark_master_vm" {
   }
 
   metadata = {
-    ssh-keys = "airflow:${tls_private_key.airflow_ssh_key.public_key_openssh}"
+    ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
   metadata_startup_script = file("${path.module}/scripts/spark_master_script.sh")
@@ -38,7 +38,7 @@ resource "google_compute_instance" "spark_workers" {
   count        = 2
   name         = "spark-worker-${count.index}"
   machine_type = "e2-standard-2"
-  zone         = "europe-west9-c" # Workers dans une zone différente pour tolérance de panne
+  zone         = "europe-west1-c" # Workers dans une zone différente pour tolérance de panne
   tags         = ["spark-worker"]
 
   boot_disk {

@@ -1,4 +1,4 @@
 provider "google" {
     project = "reddit-feelings-pipeline"
-    region = "europe-west9"
+    region = "europe-west1"
 }
