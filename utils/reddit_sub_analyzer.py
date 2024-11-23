@@ -392,7 +392,9 @@ def print_simple_results(results_by_category: Dict[str, List[str]]) -> None:
             print(f"r/{subreddit}")
 
 
-def get_reddit_credentials(filename: str = "../config/reddit_credentials.json") -> Dict[str, str]:
+def get_reddit_credentials(
+    filename: str = "../config/reddit_credentials.json",
+) -> Dict[str, str]:
     """
     Read Reddit API credentials from a JSON file.
 

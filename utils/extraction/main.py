@@ -91,7 +91,9 @@ def save_post_to_bucket(bucket_name: str, post_data: dict) -> None:
         blob = bucket.blob(file_name)
         blob.upload_from_string(json_data, content_type="application/json")
 
-        print(f"Post {post_data['id']} saved to bucket '{bucket_name}' as '{file_name}'.")
+        print(
+            f"Post {post_data['id']} saved to bucket '{bucket_name}' as '{file_name}'."
+        )
     except Exception as error:
         print(f"Error saving post {post_data['id']} to bucket: {error}")
         raise
