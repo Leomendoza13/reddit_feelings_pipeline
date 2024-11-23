@@ -1,9 +1,15 @@
+"""
+RedditRateLimiter file
+"""
+
 import time
+
 
 class RedditRateLimiter:
     """
     A class to handle Reddit API rate limiting (100 requests per minute).
     """
+
     def __init__(self, max_requests_per_minute: int = 100):
         """
         Initializes the rate limiter.
