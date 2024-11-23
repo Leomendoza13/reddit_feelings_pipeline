@@ -25,7 +25,6 @@ certifi==2024.2.2
 cffi==1.16.0
 cfgv==3.4.0
 charset-normalizer==3.3.2
-cliapp==1.20180812.1
 click==8.1.7
 cmdtest==0.32+git
 comm==0.2.2
