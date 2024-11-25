@@ -47,23 +47,23 @@ resource "google_compute_firewall" "allow_local_access" {
   target_tags   = ["spark-master", "spark-worker", "extraction-vm"]
 }
 
-# Rule for communication Spark Master ↔ Spark Workers
-resource "google_compute_firewall" "allow_spark_master_to_workers" {
-  name        = "allow-spark-master-to-workers"
-  description = "Allow Spark Master to communicate with Spark Workers"
+# Rule for communication Workers → Master
+resource "google_compute_firewall" "allow_spark_workers_to_master" {
+  name        = "allow-spark-workers-to-master"
+  description = "Allow Spark Workers to communicate with Spark Master"
   priority    = 1000
   network     = google_compute_network.reddit_vpc.id
 
   allow {
     protocol = "tcp"
     ports    = [
-      "7077",    # Spark Master comunication
-      "8081"     # Spark Worker UI
+      "7077",  # Spark Master port
+      "8080"   # Spark Master UI
     ]
   }
 
-  source_tags = ["spark-master"]
-  target_tags = ["spark-worker"]
+  source_tags = ["spark-worker"]
+  target_tags = ["spark-master"]
 }
 
 # Rule for monitoring ICMP
@@ -80,3 +80,4 @@ resource "google_compute_firewall" "allow_monitoring" {
   source_tags = ["spark-master", "spark-worker"]
   target_tags = ["spark-master", "spark-worker"]
 }
+

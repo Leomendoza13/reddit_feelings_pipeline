@@ -16,6 +16,8 @@ resource "google_compute_instance" "spark_master_vm" {
     network    = google_compute_network.reddit_vpc.id
     subnetwork = google_compute_subnetwork.reddit_subnet.id
 
+    network_ip = "10.0.0.2"
+
     access_config {
 
     }
@@ -34,9 +36,42 @@ resource "google_compute_instance" "spark_master_vm" {
 }
 
 # Spark Worker VMs
-resource "google_compute_instance" "spark_workers" {
-  count        = 2
-  name         = "spark-worker-${count.index}"
+resource "google_compute_instance" "spark_worker0" {
+  name         = "spark-worker-0"
+  machine_type = "e2-standard-2"
+  zone         = "europe-west1-c" # Workers dans une zone différente pour tolérance de panne
+  tags         = ["spark-worker"]
+
+  boot_disk {
+    initialize_params {
+      image = "ubuntu-os-cloud/ubuntu-2204-lts"
+      size  = 50
+      type  = "pd-ssd"
+    }
+  }
+
+  service_account {
+    email  = google_service_account.spark_service_account.email
+    scopes = ["https://www.googleapis.com/auth/cloud-platform"]
+  }
+
+  network_interface {
+    network    = google_compute_network.reddit_vpc.id
+    subnetwork = google_compute_subnetwork.reddit_subnet.id
+    network_ip = "10.0.0.3"
+    access_config {}
+  }
+
+  metadata = {
+    ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
+  }
+
+  metadata_startup_script = file("${path.module}/scripts/spark_cluster_script.sh")
+}
+
+# Spark Worker VMs
+resource "google_compute_instance" "spark_worker1" {
+  name         = "spark-worker-1"
   machine_type = "e2-standard-2"
   zone         = "europe-west1-c" # Workers dans une zone différente pour tolérance de panne
   tags         = ["spark-worker"]
@@ -58,5 +93,12 @@ resource "google_compute_instance" "spark_workers" {
     network    = google_compute_network.reddit_vpc.id
     subnetwork = google_compute_subnetwork.reddit_subnet.id
     access_config {}
+    network_ip = "10.0.0.4"
   }
+
+  metadata = {
+    ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
+  }
+
+  metadata_startup_script = file("${path.module}/scripts/spark_cluster_script.sh")
 }

@@ -41,12 +41,15 @@ services:
   spark-master:
     image: bitnami/spark:3.5.3
     container_name: spark-master
+    network_mode: "host"
     ports:
       - "8080:8080"  # Web UI for Spark Master
       - "7077:7077"  # Spark Master
     environment:
       - SPARK_MODE=master
-      - SPARK_MASTER_HOST=spark-master
+      - SPARK_MASTER_HOST=10.0.0.2
+      - SPARK_MASTER_PORT=7077
+      - SPARK_MASTER_WEBUI_PORT=8080
     command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.master.Master"
 EOL
 
