@@ -32,7 +32,7 @@ resource "google_compute_instance" "spark_master_vm" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
-  metadata_startup_script = file("${path.module}/scripts/spark_master_script.sh")
+  metadata_startup_script = file("${path.module}/../scripts/spark_master_script.sh")
 }
 
 # Spark Worker VMs
@@ -66,7 +66,7 @@ resource "google_compute_instance" "spark_worker0" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
-  metadata_startup_script = file("${path.module}/scripts/spark_cluster_script.sh")
+  metadata_startup_script = file("${path.module}/../scripts/spark_cluster_script.sh")
 }
 
 # Spark Worker VMs
@@ -100,5 +100,5 @@ resource "google_compute_instance" "spark_worker1" {
     ssh-keys = "${var.ssh_user}:${file(var.ssh_pub_key_path)}"
   }
 
-  metadata_startup_script = file("${path.module}/scripts/spark_cluster_script.sh")
+  metadata_startup_script = file("${path.module}/../scripts/spark_cluster_script.sh")
 }

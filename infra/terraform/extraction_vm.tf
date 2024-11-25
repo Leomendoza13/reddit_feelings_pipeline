@@ -34,7 +34,7 @@ resource "null_resource" "extraction" {
   depends_on = [google_compute_instance.extraction_vm]
 
   provisioner "file" {
-    source      = "../utils/extraction/"
+    source      = "../../src/extraction/"
     destination = "."
 
     connection {

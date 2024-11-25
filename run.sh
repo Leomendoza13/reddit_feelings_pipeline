@@ -1,13 +1,13 @@
 #!/bin/bash
 source venv/bin/activate
-python ./utils/reddit_sub_analyzer.py
+python ./src/utils/reddit_sub_analyzer.py
 
-cp config/output.json utils/extraction
-cp config/reddit_credentials.json utils/extraction
+cp config/output.json src/extraction
+cp config/reddit_credentials.json src/extraction
 
 #pip freeze > utils/extraction_function/requirements.txt
 #pip install -r utils/extraction_function/requirements.txt -t utils/extraction_function/packages
 
-cd terraform/
+cd infra/terraform/
 terraform init
 terraform apply
