@@ -1,3 +1,3 @@
 #!/bin/bash
-cd infra/terraform/
+cd ../infra/terraform/
 terraform destroy -auto-approve 

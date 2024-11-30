@@ -1,4 +1,5 @@
 #!/bin/bash
+cd ../
 source venv/bin/activate
 python ./src/utils/reddit_sub_analyzer.py
 
