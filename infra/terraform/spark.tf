@@ -102,3 +102,32 @@ resource "google_compute_instance" "spark_worker1" {
 
   metadata_startup_script = file("${path.module}/../scripts/spark_cluster_script.sh")
 }
+
+resource "null_resource" "processing" {
+  depends_on = [google_compute_instance.spark_master_vm]
+
+  provisioner "file" {
+    source      = "../../src/processing/spark.py"
+    destination = "/home/${var.ssh_user}/spark.py" 
+
+    connection {
+      type        = "ssh"
+      user        = var.ssh_user
+      private_key = file(replace(var.ssh_pub_key_path, ".pub", ""))
+      host        = google_compute_instance.spark_master_vm.network_interface[0].access_config[0].nat_ip
+    }
+  }
+
+  provisioner "remote-exec" {
+    inline = [
+      "sudo mv ~/spark.py /opt/spark/jobs/"
+    ]
+
+    connection {
+      type        = "ssh"
+      user        = var.ssh_user
+      private_key = file(replace(var.ssh_pub_key_path, ".pub", ""))
+      host        = google_compute_instance.spark_master_vm.network_interface[0].access_config[0].nat_ip
+    }
+  }
+}

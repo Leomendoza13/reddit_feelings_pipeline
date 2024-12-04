@@ -1,7 +1,6 @@
 #!/bin/bash
-cd ../
 source venv/bin/activate
-python ./src/utils/reddit_sub_analyzer.py
+python src/utils/reddit_sub_analyzer.py
 
 cp config/output.json src/extraction
 cp config/reddit_credentials.json src/extraction

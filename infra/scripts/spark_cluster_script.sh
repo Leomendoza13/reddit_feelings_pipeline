@@ -59,8 +59,9 @@ services:
           cpus: '2'
           memory: 2G
     volumes:
-      - /opt/spark/jobs:/opt/spark/jobs
-      - /opt/spark/data:/opt/spark/data
+      - /opt/spark/jobs:/opt/bitnami/spark/jobs
+      - /opt/spark/data:/opt/bitnami/spark/data
+      - /opt/spark/jars/gcs-connector-hadoop3-2.2.11.jar:/opt/bitnami/spark/jars/gcs-connector-hadoop3-2.2.11.jar
     logging:
       driver: "json-file"
       options:
@@ -71,7 +72,11 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-    command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://10.0.0.2:7077"
+    command: >
+      bash -c "
+        pip install transformers torch google-cloud-bigquery google-cloud-storage pandas pyarrow &&
+        /opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.worker.Worker spark://10.0.0.2:7077
+      "
 
 networks:
   spark-network:
@@ -79,8 +84,12 @@ networks:
 EOL
 
 # Create directories for jobs and data
-sudo mkdir -p /opt/spark/jobs /opt/spark/data
-sudo chmod -R 777 /opt/spark/jobs /opt/spark/data
+sudo mkdir -p /opt/spark/jobs /opt/spark/data /opt/spark/jars
+sudo chown -R $USER:$USER /opt/spark/jobs /opt/spark/data /opt/spark/jars
+sudo chmod -R 777 /opt/spark/jobs /opt/spark/data /opt/spark/jars
+
+wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-2.2.11.jar
+mv gcs-connector-hadoop3-2.2.11.jar /opt/spark/jars/gcs-connector-hadoop3-2.2.11.jar
 
 # Start Spark Worker using Docker Compose
 cd /opt/spark

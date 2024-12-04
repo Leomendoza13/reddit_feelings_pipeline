@@ -50,16 +50,32 @@ services:
       - SPARK_MASTER_HOST=10.0.0.2
       - SPARK_MASTER_PORT=7077
       - SPARK_MASTER_WEBUI_PORT=8080
-    command: "/opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.master.Master"
+      - TRANSFORMERS_CACHE=/opt/bitnami/spark/cache
+      - HF_HOME=/opt/bitnami/spark/cache 
+    volumes:
+      - /opt/spark/jobs:/opt/bitnami/spark/jobs
+      - /opt/spark/data:/opt/bitnami/spark/data
+      - /opt/spark/cache:/opt/bitnami/spark/cache
+      - /opt/spark/jars/gcs-connector-hadoop3-2.2.11.jar:/opt/bitnami/spark/jars/gcs-connector-hadoop3-2.2.11.jar
+    command: >
+      bash -c "
+        pip install transformers torch google-cloud-bigquery google-cloud-storage pandas pyarrow &&
+        /opt/bitnami/spark/bin/spark-class org.apache.spark.deploy.master.Master
+      "
 EOL
 
 # Create directories for jobs and data
-sudo mkdir -p /opt/spark/jobs /opt/spark/data
-sudo chmod -R 777 /opt/spark/jobs /opt/spark/data
+sudo mkdir -p /opt/spark/jobs /opt/spark/data /opt/spark/cache /opt/spark/jars
+sudo chown -R $USER:$USER /opt/spark/jobs /opt/spark/data /opt/spark/cache /opt/spark/jars
+sudo chmod -R 777 /opt/spark/jobs /opt/spark/data /opt/spark/cache /opt/spark/jars
+
+wget https://storage.googleapis.com/hadoop-lib/gcs/gcs-connector-hadoop3-2.2.11.jar
+mv gcs-connector-hadoop3-2.2.11.jar /opt/spark/jars/gcs-connector-hadoop3-2.2.11.jar
 
 # Start Spark Master using Docker Compose
 cd /opt/spark
 sudo docker compose up -d spark-master
+
 
 # Print instructions for user
 echo "Installation terminée. Veuillez redémarrer votre machine pour appliquer les changements au groupe Docker."
