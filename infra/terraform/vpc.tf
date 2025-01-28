@@ -47,6 +47,26 @@ resource "google_compute_firewall" "allow_local_access" {
   target_tags   = ["spark-master", "spark-worker", "extraction-vm"]
 }
 
+# Rule for communication Master → Workers
+resource "google_compute_firewall" "allow_spark_master_to_workers" {
+  name        = "allow-spark-master-to-workers"
+  description = "Allow Spark Master to communicate with Spark Workers"
+  priority    = 1000
+  network     = google_compute_network.reddit_vpc.id
+
+  allow {
+    protocol = "tcp"
+    ports    = [
+      "8081",  # Worker UI
+      "7078",  # Worker port for receiving tasks
+      "0-65535" # Dynamic ports for shuffle operations
+    ]
+  }
+
+  source_tags = ["spark-master"]
+  target_tags = ["spark-worker"]
+}
+
 # Rule for communication Workers → Master
 resource "google_compute_firewall" "allow_spark_workers_to_master" {
   name        = "allow-spark-workers-to-master"
