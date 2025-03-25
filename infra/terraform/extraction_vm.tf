@@ -13,6 +13,7 @@ resource "google_compute_instance" "extraction_vm" {
   network_interface {
     network    = google_compute_network.reddit_vpc.id
     subnetwork = google_compute_subnetwork.reddit_subnet.id
+    network_ip = "10.0.0.5"
 
     access_config {
     }
@@ -33,7 +34,7 @@ resource "null_resource" "extraction" {
   depends_on = [google_compute_instance.extraction_vm]
 
   provisioner "file" {
-    source      = "../utils/extraction/"
+    source      = "../../src/extraction/"
     destination = "."
 
     connection {
